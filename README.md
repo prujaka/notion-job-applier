@@ -1,2 +1,1 @@
 # Notion job applier
-test
