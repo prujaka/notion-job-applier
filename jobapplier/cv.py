@@ -31,8 +31,8 @@ def cvfy(text: str, lang: str) -> str:
     return f'cv{sep}{text}'
 
 
-def copy_and_rename_cvs():
-    df_listings = pd.read_csv(DATA_PATH.joinpath("listings.csv"))
+def copy_and_rename_cvs(listings_csv):
+    df_listings = pd.read_csv(DATA_PATH.joinpath(listings_csv))
     job_titles = df_listings['job_title'].to_list()
     languages = df_listings['language'].to_list()
     cv_filenames = [
