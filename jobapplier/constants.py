@@ -17,3 +17,7 @@ API_HEADERS = {
 }
 URL_DATABASE = f"https://api.notion.com/v1/databases/{DATABASE_ID}/query"
 
+DOCUMENTS_PATH = Path("documents")
+CV_RAW_PATH = DOCUMENTS_PATH.joinpath("cv_raw")
+CV_RENAMED_PATH = DOCUMENTS_PATH.joinpath("cv_renamed")
+DATA_PATH = DOCUMENTS_PATH.joinpath("data")
