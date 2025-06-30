@@ -5,7 +5,7 @@ import pandas as pd
 from nltk.tokenize import word_tokenize
 from unidecode import unidecode
 
-from jobapplier.constants import CV_RAW_PATH, CV_RENAMED_PATH, DATA_PATH
+from constants import CV_RAW_PATH, CV_RENAMED_PATH, DATA_PATH
 
 
 def get_sep(lang: str):
@@ -44,6 +44,6 @@ def copy_and_rename_cvs(listings_csv):
         CV_RENAMED_PATH.joinpath(filename) for filename in cv_filenames
     ]
     for (cv_raw, cv_to_rename) in zip(cv_paths_raw, cv_paths_to_rename):
-        shutil.copy2(cv_raw, cv_to_rename)
+        shutil.copy(cv_raw, cv_to_rename)
 
     return None
