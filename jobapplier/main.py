@@ -1,6 +1,6 @@
 import argparse
-from jobapplier.cv import copy_and_rename_cvs
-from jobapplier.constants import LISTINGS_INIT_FILE
+from cv import copy_and_rename_cvs
+from constants import LISTINGS_INIT_FILE
 
 
 if __name__ == '__main__':
