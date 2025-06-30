@@ -22,3 +22,6 @@ CV_RAW_PATH = DOCUMENTS_PATH.joinpath("cv_raw")
 CV_RENAMED_PATH = DOCUMENTS_PATH.joinpath("cv_renamed")
 DATA_PATH = DOCUMENTS_PATH.joinpath("data")
 LISTINGS_INIT_FILE = Path("listings_init.csv")
+
+LETTER_TEMPLATE_PATH_EN = Path("documents/letter_templates/en_template.txt")
+LETTER_TEMPLATE_PATH_FR = Path("documents/letter_templates/fr_template.txt")

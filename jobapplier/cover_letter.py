@@ -1,6 +1,9 @@
 import unicodedata
 import os
 
+from jobapplier.constants import (LETTER_TEMPLATE_PATH_EN,
+                                  LETTER_TEMPLATE_PATH_FR)
+
 
 def starts_with_vowel(word: str) -> bool:
     """Check if the word starts with a vowel (includes accented letters)."""
@@ -16,10 +19,10 @@ def starts_with_vowel(word: str) -> bool:
     return base_letter in 'aeiouy'
 
 
-def build_letter(lang: str, company: str, title: str) -> str:
+def build_template(company, title):
     templates = {
         'EN': {
-            'file': 'en_template.txt',
+            'file': LETTER_TEMPLATE_PATH_EN,
             'replacements': {
                 'COMPANY NAME': company,
                 'JOB TITLE': title,
@@ -27,7 +30,7 @@ def build_letter(lang: str, company: str, title: str) -> str:
             'article_before_title': ('as a ', 'as an ')
         },
         'FR': {
-            'file': 'fr_template.txt',
+            'file': LETTER_TEMPLATE_PATH_FR,
             'replacements': {
                 'NOM D’ENTREPRISE': company,
                 'TITRE DU POSTE': title,
@@ -36,6 +39,11 @@ def build_letter(lang: str, company: str, title: str) -> str:
             'de_phrase': ('de ', "d'")
         }
     }
+    return templates
+
+
+def build_letter(lang: str, company: str, title: str) -> str:
+    templates = build_template(company, title)
 
     if lang not in templates:
         raise ValueError("Please select lang value from ['EN', 'FR'].")
@@ -45,9 +53,8 @@ def build_letter(lang: str, company: str, title: str) -> str:
 
     with open(file_path, 'r', encoding='utf-8') as f:
         letter = f.read()
-
-    for placeholder, value in config['replacements'].items():
-        letter = letter.replace(placeholder, value)
+        for placeholder, value in config['replacements'].items():
+            letter = letter.replace(placeholder, value)
 
     # Handle article before job title
     article, vowel_article = config['article_before_title']
@@ -64,3 +71,7 @@ def build_letter(lang: str, company: str, title: str) -> str:
         letter = letter.replace(original_phrase, corrected_phrase)
 
     return letter
+
+
+if __name__ == '__main__':
+    print(build_letter("FR", "COMPANY", "JOB"))
