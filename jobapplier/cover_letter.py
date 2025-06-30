@@ -19,7 +19,7 @@ def starts_with_vowel(word: str) -> bool:
     return base_letter in 'aeiouy'
 
 
-def build_template(company, title):
+def build_letter_config(company, title):
     templates = {
         'EN': {
             'file': LETTER_TEMPLATE_PATH_EN,
@@ -43,7 +43,7 @@ def build_template(company, title):
 
 
 def build_letter(lang: str, company: str, title: str) -> str:
-    templates = build_template(company, title)
+    templates = build_letter_config(company, title)
 
     if lang not in templates:
         raise ValueError("Please select lang value from ['EN', 'FR'].")
@@ -56,14 +56,12 @@ def build_letter(lang: str, company: str, title: str) -> str:
         for placeholder, value in config['replacements'].items():
             letter = letter.replace(placeholder, value)
 
-    # Handle article before job title
     article, vowel_article = config['article_before_title']
     title_phrase = f"{article}{title}"
     if starts_with_vowel(title):
         corrected_phrase = f"{vowel_article}{title}"
         letter = letter.replace(title_phrase, corrected_phrase)
 
-    # Handle "de NOM D’ENTREPRISE" → "d’NOM D’ENTREPRISE" in French
     if lang == 'FR' and starts_with_vowel(company):
         de_phrase, de_contracted = config['de_phrase']
         original_phrase = f"{de_phrase}{company}"
