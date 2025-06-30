@@ -20,9 +20,9 @@ def starts_with_vowel(word: str) -> bool:
 
 
 def build_letter_config(company, title):
-    templates = {
+    configs = {
         'EN': {
-            'file': LETTER_TEMPLATE_PATH_EN,
+            'template_file': LETTER_TEMPLATE_PATH_EN,
             'replacements': {
                 'COMPANY NAME': company,
                 'JOB TITLE': title,
@@ -30,7 +30,7 @@ def build_letter_config(company, title):
             'article_before_title': ('as a ', 'as an ')
         },
         'FR': {
-            'file': LETTER_TEMPLATE_PATH_FR,
+            'template_file': LETTER_TEMPLATE_PATH_FR,
             'replacements': {
                 'NOM D’ENTREPRISE': company,
                 'TITRE DU POSTE': title,
@@ -39,19 +39,20 @@ def build_letter_config(company, title):
             'de_phrase': ('de ', "d'")
         }
     }
-    return templates
+    return configs
 
 
 def build_letter(lang: str, company: str, title: str) -> str:
-    templates = build_letter_config(company, title)
+    configs = build_letter_config(company, title)
 
-    if lang not in templates:
-        raise ValueError("Please select lang value from ['EN', 'FR'].")
+    if lang not in configs:
+        raise ValueError(f"The language selected: '{lang}'."
+                         "Please select lang value from ['EN', 'FR'].")
 
-    config = templates[lang]
-    file_path = os.path.join(os.getcwd(), config['file'])
+    config = configs[lang]
+    template_file_path = configs[lang]['template_file']
 
-    with open(file_path, 'r', encoding='utf-8') as f:
+    with open(template_file_path, 'r', encoding='utf-8') as f:
         letter = f.read()
         for placeholder, value in config['replacements'].items():
             letter = letter.replace(placeholder, value)
@@ -72,4 +73,4 @@ def build_letter(lang: str, company: str, title: str) -> str:
 
 
 if __name__ == '__main__':
-    print(build_letter("FR", "COMPANY", "JOB"))
+    print(build_letter("DF", "COMPANY", "JOB"))
