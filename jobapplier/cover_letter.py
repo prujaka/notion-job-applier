@@ -1,7 +1,8 @@
 import unicodedata
+import pandas as pd
 import os
 
-from jobapplier.constants import (LETTER_TEMPLATE_PATH_EN,
+from jobapplier.constants import (LETTER_TEMPLATE_PATH_EN, DATA_PATH,
                                   LETTER_TEMPLATE_PATH_FR)
 
 
@@ -70,6 +71,15 @@ def build_letter(lang: str, company: str, title: str) -> str:
         letter = letter.replace(original_phrase, corrected_phrase)
 
     return letter
+
+
+def add_cover_letters(listings_init_csv: str, listings_with_covers_csv: str):
+    df_listings = pd.read_csv(DATA_PATH.joinpath(listings_init_csv))
+    df_listings['cover_letter'] = df_listings.apply(
+        lambda row: build_letter(row['language'], row['company_name'],
+                                 row['job_title']), axis=1
+    )
+    df_listings.to_csv(DATA_PATH.joinpath(listings_with_covers_csv), index=False)
 
 
 if __name__ == '__main__':
