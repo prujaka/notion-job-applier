@@ -1,4 +1,6 @@
+import json
 import requests
+from requests.models import Response
 
 
 def fetch_database_jsons(url: str, headers: dict) -> list:
@@ -34,6 +36,15 @@ def fetch_database_jsons(url: str, headers: dict) -> list:
         results += results_loc
 
     return results
+
+
+def stage_is_none(entry: dict) -> bool:
+    """Check whether the 'Stage' property of a JSON entry is None.
+
+    Returns:
+        bool: True if the 'Stage' property is None, False otherwise.
+    """
+    return entry['properties']['Stage']['select'] is None
 
 
 def add_code_block(text: str, block_id: str, headers: dict) -> Response:
