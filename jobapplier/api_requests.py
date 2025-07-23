@@ -2,7 +2,18 @@ import requests
 
 
 def fetch_database_jsons(url: str, headers: dict) -> list:
-    """Fetch and concatenate database jsons."""
+    """
+    Fetch all paginated JSON entries from a Notion database and return them
+    as a list.
+
+    Args:
+        url (str): The Notion API endpoint URL for querying the database.
+        headers (dict): A dictionary of HTTP headers including authorization
+            and version info.
+
+    Returns:
+        list: A list of all database entry objects returned by the Notion API.
+    """
     has_more = True
     cursor = None
     results = []
