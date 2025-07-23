@@ -34,3 +34,52 @@ def fetch_database_jsons(url: str, headers: dict) -> list:
         results += results_loc
 
     return results
+
+
+def add_code_block(text: str, block_id: str, headers: dict) -> Response:
+    """Append a plain text code block to the specified Notion block or page.
+
+    Args:
+        text (str): The text content to include in the code block.
+        block_id (str): The ID of the parent block or page to append
+            the code block to.
+        headers (str): Notion API headers for a PATCH request.
+
+    Returns:
+        Response: The HTTP response object returned by the Notion API.
+    """
+    children = build_codeblock_json(text)
+    url = f"https://api.notion.com/v1/blocks/{block_id}/children"
+    response = requests.patch(url, headers=headers, data=json.dumps(children))
+    return response
+
+
+def build_codeblock_json(text: str):
+    """
+    Build a Notion code block JSON object from a plain text string.
+
+    Args:
+        text (str): The text content to include in the code block.
+
+    Returns:
+        dict: A dictionary representing the Notion code block payload,
+            wrapped in a 'children' list.
+    """
+    children = {
+        "children": [
+            {
+                "type": "code",
+                "code": {
+                    "caption": [],
+                    "rich_text": [{
+                        "type": "text",
+                        "text": {
+                            "content": text
+                        }
+                    }],
+                    "language": "plain text"
+                }
+            }
+        ]
+    }
+    return children
