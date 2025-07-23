@@ -5,7 +5,7 @@ import pandas as pd
 from nltk.tokenize import word_tokenize
 from unidecode import unidecode
 
-from constants import CV_RAW_PATH, CV_RENAMED_PATH, DATA_PATH
+from jobapplier.constants import CV_RAW_PATH, CV_RENAMED_PATH, DATA_PATH
 
 
 def get_sep(lang: str):
