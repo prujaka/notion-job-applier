@@ -8,7 +8,7 @@ config = ConfigParser()
 config.read(CONFIG_PATH)
 
 NOTION_API_KEY = config['secrets']['api_key']
-DATABASE_ID = config['databases']['database_id']
+TEST_DATABASE_ID = config['databases']['test_database_id']
 
 API_HEADERS = {
     "Authorization": f"Bearer {NOTION_API_KEY}",
@@ -16,7 +16,8 @@ API_HEADERS = {
     "Accept": "application/json",
     "Notion-Version": "2022-06-28",
 }
-URL_DATABASE = f"https://api.notion.com/v1/databases/{DATABASE_ID}/query"
+URL_TEST_DATABASE = (f"https://api.notion.com/v1/databases/{TEST_DATABASE_ID}"
+                     f"/query")
 
 DOCUMENTS_PATH = Path("documents")
 CV_RAW_PATH = DOCUMENTS_PATH.joinpath("cv_raw")
