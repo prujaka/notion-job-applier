@@ -9,6 +9,7 @@ config.read(CONFIG_PATH)
 
 NOTION_API_KEY = config['secrets']['api_key']
 TEST_DATABASE_ID = config['databases']['test_database_id']
+JOB_TRACKER_2_DATABASE_ID = config['databases']['job_tracker_2_database_id']
 
 API_HEADERS = {
     "Authorization": f"Bearer {NOTION_API_KEY}",
@@ -18,6 +19,9 @@ API_HEADERS = {
 }
 URL_TEST_DATABASE = (f"https://api.notion.com/v1/databases/{TEST_DATABASE_ID}"
                      f"/query")
+URL_JOB_TRACKER_2_DATABASE = (
+    f"https://api.notion.com/v1/databases/{JOB_TRACKER_2_DATABASE_ID}"
+    f"/query")
 
 DOCUMENTS_PATH = Path("documents")
 CV_RAW_PATH = DOCUMENTS_PATH.joinpath("cv_raw")
