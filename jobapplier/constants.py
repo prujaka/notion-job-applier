@@ -10,6 +10,7 @@ config.read(CONFIG_PATH)
 NOTION_API_KEY = config['secrets']['api_key']
 TEST_DATABASE_ID = config['databases']['test_database_id']
 JOB_TRACKER_2_DATABASE_ID = config['databases']['job_tracker_2_database_id']
+OPENAI_KEY = config['secrets']['openai_key']
 
 API_HEADERS = {
     "Authorization": f"Bearer {NOTION_API_KEY}",
