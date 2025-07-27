@@ -3,41 +3,6 @@ import requests
 from requests.models import Response
 
 
-def fetch_database_jsons(url: str, headers: dict) -> list:
-    """
-    Fetch all paginated JSON entries from a Notion database and return them
-    as a list.
-
-    Args:
-        url (str): The Notion API endpoint URL for querying the database.
-        headers (dict): A dictionary of HTTP headers including authorization
-            and version info.
-
-    Returns:
-        list: A list of all database entry objects returned by the Notion API.
-    """
-    has_more = True
-    cursor = None
-    results = []
-    body = {}
-
-    while has_more:
-        if not cursor:
-            search_response = requests.post(url=url, headers=headers)
-        else:
-            search_response = requests.post(url=url, headers=headers, json=body)
-
-        search_response_dict = search_response.json()
-        has_more = search_response_dict["has_more"]
-        cursor = search_response_dict["next_cursor"]
-        body = {"start_cursor": cursor}
-
-        results_loc = search_response_dict["results"]
-        results += results_loc
-
-    return results
-
-
 def stage_is_none(entry: dict) -> bool:
     """Check whether the 'Stage' property of a JSON entry is None.
 
@@ -50,31 +15,26 @@ def stage_is_none(entry: dict) -> bool:
     return entry['properties']['Stage']['select'] is None
 
 
-def add_block(text: str, block_id: str, headers: dict,
-              block_type: str) -> Response:
-    """Append a block to the specified Notion block or page.
-    Reference: https://developers.notion.com/reference/patch-block-children
+def build_rich_text(text):
+    """
+    Build a Notion rich text JSON object from a plain text string. If the input
+    text's length exceeds 2000 characters, break it down into chunks.
 
     Args:
-        text (str): The text content to include in the block.
-        block_id (str): The ID of the parent block or page to append
-            the code block to.
-        headers (str): Notion API headers for a PATCH request.
-        block_type (str): Type of Notion block to create.
-            Supported values: 'code', 'paragraph'.
+        text (str): The text content to include in the rich text object.
 
     Returns:
-        Response: The HTTP response object returned by the Notion API.
+        dict: Notion rich text object.
     """
-    if block_type == 'code':
-        children = build_codeblock_json(text)
-    elif block_type == 'paragraph':
-        children = build_paragraph_json(text)
-    else:
-        children = build_paragraph_json(text)
-    url = f"https://api.notion.com/v1/blocks/{block_id}/children"
-    response = requests.patch(url, headers=headers, data=json.dumps(children))
-    return response
+    max_len = 2000
+    chunks = [text[i:i + max_len] for i in range(0, len(text), max_len)]
+    rich_text = [{
+        "type": "text",
+        "text": {
+            "content": chunk
+        }
+    } for chunk in chunks]
+    return rich_text
 
 
 def build_codeblock_json(text: str):
@@ -89,7 +49,6 @@ def build_codeblock_json(text: str):
             wrapped in a 'children' list.
     """
     rich_text = build_rich_text(text)
-
     children = {
         "children": [
             {
@@ -133,23 +92,63 @@ def build_paragraph_json(text: str) -> dict:
     return children
 
 
-def build_rich_text(text):
-    """
-    Build a Notion rich text JSON object from a plain text string. If the input
-    text's length exceeds 2000 characters, break it down into chunks.
+def add_block(text: str, block_id: str, headers: dict,
+              block_type: str) -> Response:
+    """Append a block to the specified Notion block or page.
+    Reference: https://developers.notion.com/reference/patch-block-children
 
     Args:
-        text (str): The text content to include in the rich text object.
+        text (str): The text content to include in the block.
+        block_id (str): The ID of the parent block or page to append
+            the code block to.
+        headers (str): Notion API headers for a PATCH request.
+        block_type (str): Type of Notion block to create.
+            Supported values: 'code', 'paragraph'.
 
     Returns:
-        dict: Notion rich text object.
+        Response: The HTTP response object returned by the Notion API.
     """
-    max_len = 2000
-    chunks = [text[i:i + max_len] for i in range(0, len(text), max_len)]
-    rich_text = [{
-        "type": "text",
-        "text": {
-            "content": chunk
-        }
-    } for chunk in chunks]
-    return rich_text
+    if block_type == 'code':
+        children = build_codeblock_json(text)
+    elif block_type == 'paragraph':
+        children = build_paragraph_json(text)
+    else:
+        children = build_paragraph_json(text)
+    url = f"https://api.notion.com/v1/blocks/{block_id}/children"
+    response = requests.patch(url, headers=headers, data=json.dumps(children))
+    return response
+
+
+def fetch_database_jsons(url: str, headers: dict) -> list:
+    """
+    Fetch all paginated JSON entries from a Notion database and return them
+    as a list.
+
+    Args:
+        url (str): The Notion API endpoint URL for querying the database.
+        headers (dict): A dictionary of HTTP headers including authorization
+            and version info.
+
+    Returns:
+        list: A list of all database entry objects returned by the Notion API.
+    """
+    has_more = True
+    cursor = None
+    results = []
+    body = {}
+
+    while has_more:
+        if not cursor:
+            search_response = requests.post(url=url, headers=headers)
+        else:
+            search_response = requests.post(url=url, headers=headers, json=body)
+
+        search_response_dict = search_response.json()
+        has_more = search_response_dict["has_more"]
+        cursor = search_response_dict["next_cursor"]
+        body = {"start_cursor": cursor}
+
+        results_loc = search_response_dict["results"]
+        results += results_loc
+
+    return results
