@@ -47,20 +47,28 @@ def stage_is_none(entry: dict) -> bool:
     return entry['properties']['Stage']['select'] is None
 
 
-def add_code_block(text: str, block_id: str, headers: dict) -> Response:
-    """Append a plain text code block to the specified Notion block or page.
+def add_block(text: str, block_id: str, headers: dict,
+              block_type: str) -> Response:
+    """Append a block to the specified Notion block or page.
     Reference: https://developers.notion.com/reference/patch-block-children
 
     Args:
-        text (str): The text content to include in the code block.
+        text (str): The text content to include in the block.
         block_id (str): The ID of the parent block or page to append
             the code block to.
         headers (str): Notion API headers for a PATCH request.
+        block_type (str): Type of Notion block to create.
+            Supported values: 'code', 'paragraph'.
 
     Returns:
         Response: The HTTP response object returned by the Notion API.
     """
-    children = build_codeblock_json(text)
+    if block_type == 'code':
+        children = build_codeblock_json(text)
+    elif block_type == 'paragraph':
+        children = build_paragraph_json(text)
+    else:
+        children = build_paragraph_json(text)
     url = f"https://api.notion.com/v1/blocks/{block_id}/children"
     response = requests.patch(url, headers=headers, data=json.dumps(children))
     return response
@@ -77,15 +85,7 @@ def build_codeblock_json(text: str):
         dict: A dictionary representing the Notion code block payload,
             wrapped in a 'children' list.
     """
-    max_len = 2000
-    chunks = [text[i:i+max_len] for i in range(0, len(text), max_len)]
-
-    rich_text = [{
-        "type": "text",
-        "text": {
-            "content": chunk
-        }
-    } for chunk in chunks]
+    rich_text = build_rich_text(text)
 
     children = {
         "children": [
@@ -102,3 +102,31 @@ def build_codeblock_json(text: str):
     }
 
     return children
+
+
+def build_paragraph_json(text: str) -> dict:
+    rich_text = build_rich_text(text)
+    children = {
+        "children": [
+            {
+                "object": "block",
+                "type": "paragraph",
+                "paragraph": {
+                    "rich_text": rich_text
+                }
+            }
+        ]
+    }
+    return children
+
+
+def build_rich_text(text):
+    max_len = 2000
+    chunks = [text[i:i + max_len] for i in range(0, len(text), max_len)]
+    rich_text = [{
+        "type": "text",
+        "text": {
+            "content": chunk
+        }
+    } for chunk in chunks]
+    return rich_text
