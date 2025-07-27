@@ -41,6 +41,9 @@ def fetch_database_jsons(url: str, headers: dict) -> list:
 def stage_is_none(entry: dict) -> bool:
     """Check whether the 'Stage' property of a JSON entry is None.
 
+    Args:
+        entry: Notion database JSON entry.
+
     Returns:
         bool: True if the 'Stage' property is None, False otherwise.
     """
@@ -105,6 +108,16 @@ def build_codeblock_json(text: str):
 
 
 def build_paragraph_json(text: str) -> dict:
+    """
+    Build a Notion paragraph JSON object from a plain text string.
+
+    Args:
+        text (str): The text content to include in the paragraph.
+
+    Returns:
+        dict: A dictionary representing the Notion paragraph payload,
+            wrapped in a 'children' list.
+    """
     rich_text = build_rich_text(text)
     children = {
         "children": [
@@ -121,6 +134,16 @@ def build_paragraph_json(text: str) -> dict:
 
 
 def build_rich_text(text):
+    """
+    Build a Notion rich text JSON object from a plain text string. If the input
+    text's length exceeds 2000 characters, break it down into chunks.
+
+    Args:
+        text (str): The text content to include in the rich text object.
+
+    Returns:
+        dict: Notion rich text object.
+    """
     max_len = 2000
     chunks = [text[i:i + max_len] for i in range(0, len(text), max_len)]
     rich_text = [{
