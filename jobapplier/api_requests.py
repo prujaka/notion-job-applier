@@ -49,6 +49,7 @@ def stage_is_none(entry: dict) -> bool:
 
 def add_code_block(text: str, block_id: str, headers: dict) -> Response:
     """Append a plain text code block to the specified Notion block or page.
+    Reference: https://developers.notion.com/reference/patch-block-children
 
     Args:
         text (str): The text content to include in the code block.
@@ -76,21 +77,28 @@ def build_codeblock_json(text: str):
         dict: A dictionary representing the Notion code block payload,
             wrapped in a 'children' list.
     """
+    max_len = 2000
+    chunks = [text[i:i+max_len] for i in range(0, len(text), max_len)]
+
+    rich_text = [{
+        "type": "text",
+        "text": {
+            "content": chunk
+        }
+    } for chunk in chunks]
+
     children = {
         "children": [
             {
+                "object": "block",
                 "type": "code",
                 "code": {
                     "caption": [],
-                    "rich_text": [{
-                        "type": "text",
-                        "text": {
-                            "content": text
-                        }
-                    }],
+                    "rich_text": rich_text,
                     "language": "plain text"
                 }
             }
         ]
     }
+
     return children
