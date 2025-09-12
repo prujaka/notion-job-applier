@@ -18,6 +18,7 @@ def get_sep(lang: str):
 
 
 def cvfy(text: str, lang: str) -> str:
+    """Make the string 'Data Scientist' look like 'cv-data-scientist'"""
     text = text.replace('/', ' ')
     for c in string.punctuation:
         text = text.replace(c, '')
@@ -32,6 +33,7 @@ def cvfy(text: str, lang: str) -> str:
 
 
 def copy_and_rename_cvs(listings_csv):
+    """Take CVs named with only numbers, cvfy their names and save."""
     df_listings = pd.read_csv(DATA_PATH.joinpath(listings_csv))
     job_titles = df_listings['job_title'].to_list()
     languages = df_listings['language'].to_list()
