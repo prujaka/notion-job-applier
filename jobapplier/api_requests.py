@@ -68,7 +68,8 @@ def build_paragraph_json(text: str) -> dict:
 
 
 def add_block(
-        text: str, block_id: str,
+        text: str,
+        block_id: str,
         headers: dict,
         block_type: str
 ) -> Response:
