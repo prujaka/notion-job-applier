@@ -15,5 +15,6 @@ if __name__ == '__main__':
 
     if vars(args)['action'] == 'fill_cover_letters':
         responses = add_cover_letters(database_url=URL_JOB_TRACKER_2_DATABASE,
-                                      headers=API_HEADERS)
+                                      headers=API_HEADERS,
+                                      block_type='paragraph')
         print("Cover letters are generated and added to the Notion database.")
