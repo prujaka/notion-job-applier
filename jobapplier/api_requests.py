@@ -158,7 +158,31 @@ def fetch_database_jsons(url: str, headers: dict) -> list:
     return results
 
 
-def add_cover_letters(database_url: str, headers: dict):
+def add_cover_letters(
+        database_url: str,
+        headers: dict,
+        block_type: str | None
+) -> list:
+    """Generate and append cover letters to Notion entries missing a 'stage'
+    value.
+
+    This function:
+    1. Fetches entries from the provided Notion database URL.
+    2. Filters for entries where the 'stage' property is not set.
+    3. Builds a cover letter using language, company, and job title.
+    4. Appends each cover letter as a Notion block (e.g., paragraph or code).
+
+    Args:
+        database_url (str): The URL of the Notion database to query.
+        headers (dict): HTTP headers for Notion API requests, including
+            authorization and version info.
+        block_type (str | None): The Notion block type to use when appending
+            the cover letter. Can be either 'paragraph' or 'code'.
+
+    Returns:
+        list[Response]: A list of HTTP response objects from the Notion API,
+            one for each appended block.
+    """
     results = fetch_database_jsons(url=database_url, headers=headers)
     df_full = build_dataframe(results)
     columns = ['page_id', 'job_title', 'company', 'language']
