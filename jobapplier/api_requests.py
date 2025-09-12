@@ -8,21 +8,14 @@ from jobapplier.data_preprocessing import build_dataframe
 
 
 def stage_is_none(entry: dict) -> bool:
-    """Check whether the 'Stage' property of a JSON entry is None.
-
-    Args:
-        entry: Notion database JSON entry.
-
-    Returns:
-        bool: True if the 'Stage' property is None, False otherwise.
-    """
+    """Check whether the 'Stage' property of a JSON entry is None."""
     return entry['properties']['Stage']['select'] is None
 
 
 def build_rich_text(text):
-    """
-    Build a Notion rich text JSON object from a plain text string. If the input
-    text's length exceeds 2000 characters, break it down into chunks.
+    """Build a Notion rich text JSON object from a plain text string.
+    If the input text's length exceeds 2000 characters, break it down into
+    chunks.
 
     Args:
         text (str): The text content to include in the rich text object.
@@ -42,8 +35,7 @@ def build_rich_text(text):
 
 
 def build_codeblock_json(text: str):
-    """
-    Build a Notion code block JSON object from a plain text string.
+    """Build a Notion code block JSON object from a plain text string.
 
     Args:
         text (str): The text content to include in the code block.
@@ -71,8 +63,7 @@ def build_codeblock_json(text: str):
 
 
 def build_paragraph_json(text: str) -> dict:
-    """
-    Build a Notion paragraph JSON object from a plain text string.
+    """Build a Notion paragraph JSON object from a plain text string.
 
     Args:
         text (str): The text content to include in the paragraph.
@@ -96,8 +87,11 @@ def build_paragraph_json(text: str) -> dict:
     return children
 
 
-def add_block(text: str, block_id: str, headers: dict,
-              block_type: str) -> Response:
+def add_block(
+        text: str, block_id: str,
+        headers: dict,
+        block_type: str
+) -> Response:
     """Append a block to the specified Notion block or page.
     Reference: https://developers.notion.com/reference/patch-block-children
 
@@ -124,8 +118,7 @@ def add_block(text: str, block_id: str, headers: dict,
 
 
 def fetch_database_jsons(url: str, headers: dict) -> list:
-    """
-    Fetch all paginated JSON entries from a Notion database and return them
+    """Fetch all paginated JSON entries from a Notion database and return them
     as a list.
 
     Args:
@@ -188,15 +181,22 @@ def add_cover_letters(
     columns = ['page_id', 'job_title', 'company', 'language']
     df_pending = df_full.loc[df_full['stage'].isna(), columns]
     df_pending['cover_letter'] = df_pending.apply(
-        lambda row: build_letter(row['language'], row['company'],
-                                 row['job_title']), axis=1)
+        lambda row: build_letter(
+            row['language'],
+            row['company'],
+            row['job_title']
+        ),
+        axis=1
+    )
 
     responses = []
     for index, row in df_pending.iterrows():
-        response = add_block(text=row['cover_letter'],
-                             block_id=row['page_id'],
-                             headers=headers,
-                             block_type='paragraph')
+        response = add_block(
+            text=row['cover_letter'],
+            block_id=row['page_id'],
+            headers=headers,
+            block_type=block_type
+        )
         responses.append(response)
 
     return responses
