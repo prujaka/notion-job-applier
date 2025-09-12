@@ -1,6 +1,10 @@
 import json
+
 import requests
 from requests.models import Response
+
+from jobapplier.cover_letter import build_letter
+from jobapplier.data_preprocessing import build_dataframe
 
 
 def stage_is_none(entry: dict) -> bool:
@@ -152,3 +156,23 @@ def fetch_database_jsons(url: str, headers: dict) -> list:
         results += results_loc
 
     return results
+
+
+def add_cover_letters(database_url: str, headers: dict):
+    results = fetch_database_jsons(url=database_url, headers=headers)
+    df_full = build_dataframe(results)
+    columns = ['page_id', 'job_title', 'company', 'language']
+    df_pending = df_full.loc[df_full['stage'].isna(), columns]
+    df_pending['cover_letter'] = df_pending.apply(
+        lambda row: build_letter(row['language'], row['company'],
+                                 row['job_title']), axis=1)
+
+    responses = []
+    for index, row in df_pending.iterrows():
+        response = add_block(text=row['cover_letter'],
+                             block_id=row['page_id'],
+                             headers=headers,
+                             block_type='paragraph')
+        responses.append(response)
+
+    return responses
