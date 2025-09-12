@@ -73,13 +73,15 @@ def build_letter(lang: str, company: str, title: str) -> str:
     return letter
 
 
-def add_cover_letters(listings_init_csv: str, listings_with_covers_csv: str):
+def add_cover_letters_csv(listings_init_csv: str,
+                          listings_with_covers_csv: str):
     df_listings = pd.read_csv(DATA_PATH.joinpath(listings_init_csv))
     df_listings['cover_letter'] = df_listings.apply(
         lambda row: build_letter(row['language'], row['company_name'],
                                  row['job_title']), axis=1
     )
-    df_listings.to_csv(DATA_PATH.joinpath(listings_with_covers_csv), index=False)
+    df_listings.to_csv(DATA_PATH.joinpath(listings_with_covers_csv),
+                       index=False)
 
 
 if __name__ == '__main__':
