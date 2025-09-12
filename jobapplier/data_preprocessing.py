@@ -2,7 +2,14 @@ import pandas as pd
 
 
 def extract_text(obj: list[dict]):
+    """Extract text content from the first item of a Notion rich text list."""
     return obj[0]['text']['content'] if obj else None
+
+
+def extract_select(column: str, props: dict):
+    """Extract the option name from a Notion select property by column name."""
+    select_dict = props[column]['select']
+    return select_dict['name'] if select_dict else None
 
 
 def map_dict(entry: dict) -> dict:
@@ -34,11 +41,6 @@ def map_dict(entry: dict) -> dict:
         'cover_letter': cover_letter
     }
     return result_dict
-
-
-def extract_select(column: str, props: dict):
-    select_dict = props[column]['select']
-    return select_dict['name'] if select_dict else None
 
 
 def build_dataframe(results: list[dict]) -> pd.DataFrame:
