@@ -12,17 +12,13 @@ def stage_is_none(entry: dict) -> bool:
     return entry['properties']['Stage']['select'] is None
 
 
-def build_rich_text(text):
+def build_rich_text(text: str):
     """Build a Notion rich text JSON object from a plain text string.
-    If the input text's length exceeds 2000 characters, break it down into
+
+    If the input text's length exceeds 2000 characters, it is broken into
     chunks.
-
-    Args:
-        text (str): The text content to include in the rich text object.
-
-    Returns:
-        dict: Notion rich text object.
     """
+
     max_len = 2000
     chunks = [text[i:i + max_len] for i in range(0, len(text), max_len)]
     rich_text = [{
@@ -35,15 +31,7 @@ def build_rich_text(text):
 
 
 def build_codeblock_json(text: str):
-    """Build a Notion code block JSON object from a plain text string.
-
-    Args:
-        text (str): The text content to include in the code block.
-
-    Returns:
-        dict: A dictionary representing the Notion code block payload,
-            wrapped in a 'children' list.
-    """
+    """Build a Notion code block JSON object from a plain text string."""
     rich_text = build_rich_text(text)
     children = {
         "children": [
@@ -63,15 +51,7 @@ def build_codeblock_json(text: str):
 
 
 def build_paragraph_json(text: str) -> dict:
-    """Build a Notion paragraph JSON object from a plain text string.
-
-    Args:
-        text (str): The text content to include in the paragraph.
-
-    Returns:
-        dict: A dictionary representing the Notion paragraph payload,
-            wrapped in a 'children' list.
-    """
+    """Build a Notion paragraph JSON object from a plain text string."""
     rich_text = build_rich_text(text)
     children = {
         "children": [
@@ -93,18 +73,24 @@ def add_block(
         block_type: str
 ) -> Response:
     """Append a block to the specified Notion block or page.
+
     Reference: https://developers.notion.com/reference/patch-block-children
 
-    Args:
-        text (str): The text content to include in the block.
-        block_id (str): The ID of the parent block or page to append
-            the code block to.
-        headers (str): Notion API headers for a PATCH request.
-        block_type (str): Type of Notion block to create.
-            Supported values: 'code', 'paragraph'.
+    Parameters
+    ----------
+    text : str
+        The text content to include in the block.
+    block_id : str
+        The ID of the parent block or page to append the code block to.
+    headers : str
+        Notion API headers for a PATCH request.
+    block_type : str
+        Type of Notion block to create. Supported values: 'code', 'paragraph'.
 
-    Returns:
-        Response: The HTTP response object returned by the Notion API.
+    Returns
+    -------
+    Response
+        The HTTP response object returned by the Notion API.
     """
     if block_type == 'code':
         children = build_codeblock_json(text)
@@ -118,16 +104,19 @@ def add_block(
 
 
 def fetch_database_jsons(url: str, headers: dict) -> list:
-    """Fetch all paginated JSON entries from a Notion database and return them
-    as a list.
+    """Fetch all JSON entries from a Notion database and return them as a list.
 
-    Args:
-        url (str): The Notion API endpoint URL for querying the database.
-        headers (dict): A dictionary of HTTP headers including authorization
-            and version info.
+    Parameters
+    ----------
+    url : str
+        The Notion API endpoint URL for querying the database.
+    headers : dict
+        A dictionary of HTTP headers including authorization and version info.
 
-    Returns:
-        list: A list of all database entry objects returned by the Notion API.
+    Returns
+    -------
+    list
+        A list of all database entry objects returned by the Notion API.
     """
     has_more = True
     cursor = None
@@ -165,16 +154,22 @@ def add_cover_letters(
     3. Builds a cover letter using language, company, and job title.
     4. Appends each cover letter as a Notion block (e.g., paragraph or code).
 
-    Args:
-        database_url (str): The URL of the Notion database to query.
-        headers (dict): HTTP headers for Notion API requests, including
-            authorization and version info.
-        block_type (str | None): The Notion block type to use when appending
-            the cover letter. Can be either 'paragraph' or 'code'.
+    Parameters
+    ----------
+    database_url : str
+        The URL of the Notion database to query.
+    headers : dict
+        HTTP headers for Notion API requests, including authorization and
+        version info.
+    block_type : str or None
+        The Notion block type to use when appending the cover letter. Can
+        be either 'paragraph' or 'code'.
 
-    Returns:
-        list[Response]: A list of HTTP response objects from the Notion API,
-            one for each appended block.
+    Returns
+    -------
+    list of Response
+        A list of HTTP response objects from the Notion API, one for each
+        appended block.
     """
     results = fetch_database_jsons(url=database_url, headers=headers)
     df_full = build_dataframe(results)
