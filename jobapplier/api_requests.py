@@ -5,7 +5,7 @@ import requests
 from requests.models import Response
 
 from jobapplier.cover_letter import build_letter
-from jobapplier.data_preprocessing import build_dataframe
+from jobapplier.data_preprocessing import build_dataframe, is_cleaned_substring
 
 
 def stage_is_none(entry: dict) -> bool:
@@ -209,6 +209,7 @@ def company_substring_entries(
     df_jobs = build_dataframe(results)
     columns = ['job_title', 'company', 'date_applied', 'origin', 'stage']
     df_containing_substring = df_jobs.loc[
-        df_jobs['company'].map(lambda x: substring in x), columns
+        df_jobs['company'].map(lambda x: is_cleaned_substring(substring, x)),
+        columns
     ]
     return df_containing_substring

@@ -1,4 +1,9 @@
 import pandas as pd
+from unidecode import unidecode
+
+
+def is_cleaned_substring(substring: str, string: str) -> bool:
+    return unidecode(substring.lower()) in unidecode(string.lower())
 
 
 def extract_text(obj: list[dict]):
