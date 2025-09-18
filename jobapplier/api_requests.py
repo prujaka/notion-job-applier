@@ -1,5 +1,6 @@
 import json
 
+import pandas as pd
 import requests
 from requests.models import Response
 
@@ -196,3 +197,18 @@ def add_cover_letters(
         responses.append(response)
 
     return responses
+
+
+def company_substring_entries(
+        substring: str,
+        url: str,
+        headers: dict
+) -> pd.DataFrame:
+    """Return entries where company contains the given substring."""
+    results = fetch_database_jsons(url=url, headers=headers)
+    df_jobs = build_dataframe(results)
+    columns = ['job_title', 'company', 'date_applied', 'origin', 'stage']
+    df_containing_substring = df_jobs.loc[
+        df_jobs['company'].map(lambda x: substring in x), columns
+    ]
+    return df_containing_substring
