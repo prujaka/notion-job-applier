@@ -122,24 +122,20 @@ def fetch_database_jsons(url: str, headers: dict) -> list:
     """
     has_more = True
     cursor = None
-    results = []
+    all_pages = []
     body = {}
 
     while has_more:
-        if not cursor:
-            search_response = requests.post(url=url, headers=headers)
-        else:
-            search_response = requests.post(url=url, headers=headers, json=body)
+        if cursor:
+            body = {"start_cursor": cursor}
+        search_response = requests.post(url=url, headers=headers, json=body)
+        search_response.raise_for_status()
+        data = search_response.json()
+        all_pages.extend(data["results"])
+        has_more = data["has_more"]
+        cursor = data.get("next_cursor")
 
-        search_response_dict = search_response.json()
-        has_more = search_response_dict["has_more"]
-        cursor = search_response_dict["next_cursor"]
-        body = {"start_cursor": cursor}
-
-        results_loc = search_response_dict["results"]
-        results += results_loc
-
-    return results
+    return all_pages
 
 
 def add_cover_letters(
