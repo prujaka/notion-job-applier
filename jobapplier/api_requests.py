@@ -172,7 +172,9 @@ def add_cover_letters(
     results = fetch_database_jsons(url=database_url, headers=headers)
     df_full = build_dataframe(results)
     columns = ['page_id', 'job_title', 'company', 'language']
-    df_pending = df_full.loc[df_full['stage'].isna(), columns]
+    df_pending = df_full.loc[
+        df_full['stage'].isna() & df_full['language'].notna(), columns
+    ]
     df_pending['cover_letter'] = df_pending.apply(
         lambda row: build_letter(
             row['language'],
