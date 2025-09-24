@@ -211,3 +211,57 @@ def company_substring_entries(
         columns
     ]
     return df_containing_substring
+
+
+def assign_positions(database_url: str, headers: dict,
+                     position_property: str = "Position", dry_run: bool = True):
+    """Assign reversed order numbers to all database entries based on query
+    order.
+
+    Parameters
+    ----------
+    database_url : str
+        The Notion API database query endpoint, e.g.
+        "https://api.notion.com/v1/databases/<db_id>/query".
+    headers : dict
+        Headers including Authorization, Notion-Version, and Content-Type.
+    position_property : str
+        The name of the Number property to update.
+    dry_run : bool
+        If True, only prints the planned updates without sending PATCH requests.
+    """
+    all_pages = fetch_database_jsons(url=database_url, headers=headers)
+    total = len(all_pages)
+
+    for idx, page in enumerate(all_pages):
+        page_id = page['id']
+        position_value = total - idx  # reverse order
+        props = page['properties']
+
+        def get_text(prop_name):
+            if prop_name in props and props[prop_name]['type'] == 'title':
+                return ''.join(
+                    [t['plain_text'] for t in props[prop_name]['title']])
+            if prop_name in props and props[prop_name]['type'] == 'rich_text':
+                return ''.join(
+                    [t['plain_text'] for t in props[prop_name]['rich_text']])
+            if prop_name in props and props[prop_name]['type'] == 'date':
+                return props[prop_name]['date']['start']
+            return ''
+
+        job_title = get_text('Job Title')
+        company = get_text('Company')
+        date_applied = get_text('Date Applied')
+
+        print(f'Planned: {position_value} ← {job_title} @ {company} '
+              f'(applied {date_applied}) [{page_id}]')
+
+        if not dry_run:
+            update_url = f'https://api.notion.com/v1/pages/{page_id}'
+            update_payload = {
+                'properties': {position_property: {'number': position_value}}}
+            resp = requests.patch(update_url, headers=headers,
+                                  json=update_payload)
+            resp.raise_for_status()
+            print(f'Updated: {position_value} ← {job_title} @ {company}'
+                  f' (applied {date_applied})')
