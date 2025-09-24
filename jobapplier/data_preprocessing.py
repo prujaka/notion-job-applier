@@ -3,7 +3,7 @@ from unidecode import unidecode
 
 
 def is_cleaned_substring(substring: str, string: str) -> bool:
-    return unidecode(substring.lower()) in unidecode(string.lower())
+    return unidecode(str(substring).lower()) in unidecode(str(string).lower())
 
 
 def extract_text(obj: list[dict]):
@@ -11,15 +11,19 @@ def extract_text(obj: list[dict]):
     return obj[0]['text']['content'] if obj else None
 
 
-def extract_select(column: str, props: dict):
+def extract_select(column_name: str, props: dict):
     """Extract the option name from a Notion select property by column name."""
-    select_dict = props[column]['select']
+    select_dict = props[column_name]['select']
     return select_dict['name'] if select_dict else None
+
+
+def extract_number(column_name: str, props: dict):
+    return props[column_name]['number']
 
 
 def map_dict(entry: dict) -> dict:
     """Map a Notion API entry to a flattened dictionary format."""
-    id = entry['id']
+    _id = entry['id']
     props = entry['properties']
 
     company = extract_text(props['Company']['rich_text'])
@@ -33,9 +37,10 @@ def map_dict(entry: dict) -> dict:
     stage = extract_select('Stage', props)
     language = extract_select('Language', props)
     cover_letter = extract_select('Cover letter', props)
+    position = extract_number('Position', props)
 
     result_dict = {
-        'page_id': id,
+        'page_id': _id,
         'job_title': job_title,
         'company': company,
         'language': language,
@@ -43,7 +48,8 @@ def map_dict(entry: dict) -> dict:
         'origin': origin,
         'stage': stage,
         'job_description': job_description,
-        'cover_letter': cover_letter
+        'cover_letter': cover_letter,
+        'position': position,
     }
     return result_dict
 
