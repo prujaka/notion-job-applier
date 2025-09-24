@@ -5,7 +5,9 @@ import pandas as pd
 from nltk.tokenize import word_tokenize
 from unidecode import unidecode
 
+from jobapplier.api_requests import fetch_database_jsons
 from jobapplier.constants import CV_RAW_PATH, CV_RENAMED_PATH, DATA_PATH
+from jobapplier.data_preprocessing import build_dataframe
 
 
 def get_sep(lang: str):
@@ -32,16 +34,20 @@ def cvfy(text: str, lang: str) -> str:
     return f'cv{sep}{text}'
 
 
-def copy_and_rename_cvs(listings_csv):
+def copy_and_rename_cvs(url: str, headers: dict):
     """Take CVs named with only numbers, cvfy their names and save."""
-    df_listings = pd.read_csv(DATA_PATH.joinpath(listings_csv))
-    job_titles = df_listings['job_title'].to_list()
-    languages = df_listings['language'].to_list()
+    all_pages = fetch_database_jsons(url=url,
+                                     headers=headers)
+    df_jobs = build_dataframe(all_pages)
+    df_active_apps = (df_jobs[df_jobs['stage'].isna()]
+                      .sort_values(by='position', ascending=False))
+    job_titles = df_active_apps['job_title'].to_list()
+    languages = df_active_apps['language'].to_list()
     cv_filenames = [
-        cvfy(title, lang) + ".pdf" for (title, lang) in
+        cvfy(title, lang) + '.pdf' for (title, lang) in
         zip(job_titles, languages)
     ]
-    cv_paths_raw = sorted(CV_RAW_PATH.glob("*.pdf"))
+    cv_paths_raw = sorted(CV_RAW_PATH.glob('*.pdf'))
     cv_paths_to_rename = [
         CV_RENAMED_PATH.joinpath(filename) for filename in cv_filenames
     ]
