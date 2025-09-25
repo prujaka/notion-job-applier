@@ -53,5 +53,8 @@ def copy_and_rename_cvs(url: str, headers: dict):
     ]
     for (cv_raw, cv_to_rename) in zip(cv_paths_raw, cv_paths_to_rename):
         shutil.copy(cv_raw, cv_to_rename)
+        print(f'File {cv_raw} renamed to {cv_to_rename}')
+
+    print(f'CVs are renamed and put to {CV_RENAMED_PATH}.')
 
     return None
