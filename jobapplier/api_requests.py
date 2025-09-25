@@ -193,6 +193,9 @@ def add_cover_letters(
             block_type=block_type
         )
         responses.append(response)
+        print(f'Cover letter added to {row['job_title']} at {row['company']}')
+
+    print("Cover letters are generated and added to the Notion database.")
 
     return responses
 
