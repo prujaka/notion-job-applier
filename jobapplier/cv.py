@@ -16,7 +16,8 @@ def get_sep(lang: str):
     elif lang == 'EN':
         return '_'
     else:
-        raise KeyError("Please choose the language from ['EN', 'FR']")
+        raise KeyError('Incorrect or absent language.'
+                       " Please choose the language from ['EN', 'FR']")
 
 
 def cvfy(text: str, lang: str) -> str:
