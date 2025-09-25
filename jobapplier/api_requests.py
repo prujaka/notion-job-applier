@@ -169,7 +169,9 @@ def add_cover_letters(
         A list of HTTP response objects from the Notion API, one for each
         appended block.
     """
+    print("Fetching database with Notion's API...")
     results = fetch_database_jsons(url=database_url, headers=headers)
+    print("Database successfully fetched.")
     df_full = build_dataframe(results)
     columns = ['page_id', 'job_title', 'company', 'language']
     df_pending = df_full.loc[
