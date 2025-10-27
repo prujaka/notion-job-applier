@@ -28,6 +28,7 @@ def map_dict(entry: dict) -> dict:
 
     company = extract_text(props['Company']['rich_text'])
     job_title = extract_text(props['Job Title']['title'])
+    referral = extract_text(props['Referral']['rich_text'])
     job_description = extract_text(props['Job Description']['rich_text'])
 
     date = props['Date Applied']['date']
@@ -49,6 +50,7 @@ def map_dict(entry: dict) -> dict:
         'stage': stage,
         'job_description': job_description,
         'cover_letter': cover_letter,
+        'referral': referral,
         'position': position,
     }
     return result_dict
