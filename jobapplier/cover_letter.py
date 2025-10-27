@@ -101,6 +101,28 @@ def build_letter(lang: str, company: str, title: str) -> str:
     return letter
 
 
+def build_cover_letter_prompt(base_prompt: str, company_website: str,
+                              job_title: str, job_description: str,
+                              letter_template: str,
+                              output_file: str = None) -> str:
+    """Build a cover letter prompt and optionally save it to a file."""
+
+    assembled_prompt = (
+        f"{base_prompt.strip()}\n\n"
+        f"### Letter\n{letter_template.strip()}\n\n"
+        f"### Job description\n{job_description.strip()}\n\n"
+        f"### Input\n"
+        f"- Company website: {company_website.strip()}\n"
+        f"- Job title: {job_title.strip()}\n"
+    )
+
+    if output_file:
+        with open(output_file, "w") as f:
+            f.write(assembled_prompt)
+
+    return assembled_prompt
+
+
 # TODO: remove this function after it's not needed
 def add_cover_letters_csv(listings_init_csv: str,
                           listings_with_covers_csv: str) -> None:
