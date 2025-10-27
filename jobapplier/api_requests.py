@@ -187,7 +187,7 @@ def add_cover_letters(
     )
 
     responses = []
-    for index, row in df_pending.iterrows():
+    for i, (index, row) in enumerate(df_pending.iterrows()):
         response = add_block(
             text=row['cover_letter'],
             block_id=row['page_id'],
@@ -195,7 +195,8 @@ def add_cover_letters(
             block_type=block_type
         )
         responses.append(response)
-        print(f'Cover letter added to {row['job_title']} at {row['company']}')
+        print(f'{i + 1}. Cover letter added to {row['job_title']}'
+              f' at {row['company']}')
 
     print("Cover letters are generated and added to the Notion database.")
 
